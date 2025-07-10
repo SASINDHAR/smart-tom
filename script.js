@@ -79,21 +79,28 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-openrouter-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" // 🔁 Replace with your real API key
+        "Authorization": "Bearer sk-openrouter-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" // Replace with your real key
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
+        model: "openai/gpt-3.5-turbo", // You can also try "mistralai/mixtral-8x7b"
         messages
       })
     });
 
     const data = await response.json();
 
-    if (!data.choices || !data.choices[0]) {
-      throw new Error("Invalid response format");
+    // Log full response for debugging
+    console.log("🔁 OpenRouter Response:", data);
+
+    if (data?.choices?.[0]?.message?.content) {
+      return data.choices[0].message.content.trim();
     }
 
-    return data.choices[0].message.content.trim();
+    if (data.error?.message) {
+      return `⚠️ API Error: ${data.error.message}`;
+    }
+
+    return "⚠️ Unexpected response format. Please try again.";
 
   } catch (error) {
     console.error("ChatGPT error:", error);
