@@ -1,4 +1,4 @@
-// script.js (frontend only, using OpenRouter API key)
+// script.js (frontend calling OpenRouter API directly — using sk-user key only)
 
 const startBtn = document.getElementById("start-btn");
 const voiceBtn = document.getElementById("voice-btn");
@@ -75,15 +75,21 @@ function speak(text) {
 
 async function askChatGPT(messages) {
   try {
-    const response = await fetch("http://localhost:3000/chat", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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" // 🔑 Replace with your sk-user key
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+        messages
+      })
     });
 
     const data = await response.json();
+
+    console.log("🔁 OpenRouter Response:", data);
 
     if (data?.choices?.[0]?.message?.content) {
       return data.choices[0].message.content.trim();
@@ -92,14 +98,6 @@ async function askChatGPT(messages) {
     if (data.error?.message) {
       return `⚠️ API Error: ${data.error.message}`;
     }
-
-    return "⚠️ Unexpected response format. Please try again.";
-
-  } catch (error) {
-    console.error("ChatGPT error:", error);
-    return "⚠️ Error: " + error.message;
-  }
-}
 
     return "⚠️ Unexpected response format. Please try again.";
 
