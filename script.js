@@ -1,3 +1,5 @@
+// script.js (frontend only, using OpenRouter API key)
+
 const startBtn = document.getElementById("start-btn");
 const voiceBtn = document.getElementById("voice-btn");
 const clearBtn = document.getElementById("clear-btn");
@@ -12,7 +14,7 @@ let messages = [
   { role: "system", content: "You are a friendly AI cat assistant." }
 ];
 
-let voiceMode = "friendly"; // or "funny"
+let voiceMode = "friendly";
 
 startBtn.onclick = () => recognition.start();
 
@@ -77,18 +79,13 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-openrouter-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" // 🔁 PUT YOUR API KEY HERE
+        "Authorization": "Bearer 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" // 🔁 Replace with your real API key
       },
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
         messages
       })
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
 
     const data = await response.json();
 
