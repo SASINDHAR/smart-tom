@@ -7,6 +7,7 @@ const typingIndicator = document.getElementById("typing-indicator");
 
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = 'en-US';
+console.log("Using OpenRouter Key:", "sk-openrouter-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");
 
 let messages = [
   { role: "system", content: "You are a friendly AI cat assistant." }
