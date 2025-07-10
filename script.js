@@ -12,7 +12,7 @@ let messages = [
   { role: "system", content: "You are a friendly AI cat assistant." }
 ];
 
-let voiceMode = "friendly"; // or "funny"
+let voiceMode = "friendly"; // Can toggle to "funny"
 
 startBtn.onclick = () => recognition.start();
 
@@ -29,11 +29,13 @@ clearBtn.onclick = () => {
 
 recognition.onstart = () => {
   startBtn.innerText = "🛑 Listening...";
+  typingIndicator.innerText = "Listening...";
   mouth.style.opacity = 1;
 };
 
 recognition.onend = () => {
   startBtn.innerText = "🎤 Ask";
+  typingIndicator.innerText = "";
   mouth.style.opacity = 0;
 };
 
@@ -42,7 +44,7 @@ recognition.onresult = async (event) => {
   addMessage(userInput, "user");
   messages.push({ role: "user", content: userInput });
 
-  typingIndicator.innerText = "Bot is typing...";
+  typingIndicator.innerText = "Bot is thinking...";
 
   const reply = await askChatGPT(messages);
   messages.push({ role: "assistant", content: reply });
@@ -66,26 +68,33 @@ function speak(text) {
   utter.rate = voiceMode === "funny" ? 1.4 : 1;
   speechSynthesis.speak(utter);
   mouth.style.opacity = 1;
-
-  utter.onend = () => {
-    mouth.style.opacity = 0;
-  };
+  utter.onend = () => (mouth.style.opacity = 0);
 }
 
 async function askChatGPT(messages) {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
- "Authorization": "Bearer sk-openrouter-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"
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer sk-openrouter-YOUR-API-KEY-HERE" // 🔁 Replace with your real key
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+        messages
+      })
+    });
 
-    },
-    body: JSON.stringify({
-      model: "openai/gpt-3.5-turbo",
-      messages
-    })
-  });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
-  const data = await response.json();
-  return data.choices[0].message.content.trim();
+    const data = await response.json();
+    console.log("OpenRouter response:", data);
+
+    return data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("ChatGPT error:", error);
+    return "Sorry, I couldn't reach the assistant. Please check your API key.";
+  }
 }
