@@ -78,7 +78,7 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-openrouter-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"  ,// 🔁 use your real key here
+        "Authorization": "Bearer sk-openrouter-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",// 🔁 use your real key here
 
       },
       body: JSON.stringify({
