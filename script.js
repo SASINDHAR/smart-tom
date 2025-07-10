@@ -77,7 +77,7 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-openrouter-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" // 🔁 Replace with your real key
+        "Authorization": "Bearer sk-openrouter-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" // ✅ Your actual key here
       },
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
@@ -86,15 +86,20 @@ async function askChatGPT(messages) {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log("OpenRouter response:", data);
+
+    if (!data.choices || !data.choices[0]) {
+      throw new Error("Invalid response format");
+    }
 
     return data.choices[0].message.content.trim();
+
   } catch (error) {
     console.error("ChatGPT error:", error);
-    return "Sorry, I couldn't reach the assistant. Please check your API key.";
+    return "⚠️ Error: " + error.message;
   }
 }
