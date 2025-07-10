@@ -3,18 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Talking Bot</title>
+  <title>Smart AI Talking Assistant</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Smart AI Cat Assistant</h1>
+    <h1>Talking Cat Assistant</h1>
     <div class="cat-container">
       <img src="cat.png" id="cat" alt="AI Cat" />
       <div id="mouth"></div>
     </div>
-    <button id="start-btn">🎤 Ask</button>
-    <p id="output">Say something...</p>
+    <div class="controls">
+      <button id="start-btn">🎤 Ask</button>
+      <button id="voice-btn">🔊 Voice: Friendly</button>
+      <button id="clear-btn">🗑️ Clear</button>
+    </div>
+    <div id="chat-box">
+      <p id="typing-indicator"></p>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
