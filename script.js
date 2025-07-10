@@ -7,7 +7,7 @@ const typingIndicator = document.getElementById("typing-indicator");
 
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = 'en-US';
-console.log("Using OpenRouter Key:", "sk-openrouter-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");
+console.log("Using OpenRouter Key:", "sk-openrouter-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");
 
 let messages = [
   { role: "system", content: "You are a friendly AI cat assistant." }
@@ -78,7 +78,7 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer sk-openrouter-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"  // 🔁 use your real key here
+        "Authorization": "Bearer sk-openrouter-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"  ,// 🔁 use your real key here
 
       },
       body: JSON.stringify({
