@@ -1,4 +1,4 @@
-// script.js (frontend calling OpenRouter API directly — using sk-user key only)
+// script.js (frontend using sk-user key from OpenRouter)
 
 const startBtn = document.getElementById("start-btn");
 const voiceBtn = document.getElementById("voice-btn");
@@ -79,7 +79,7 @@ async function askChatGPT(messages) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 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" // 🔑 Replace with your sk-user key
+        "Authorization": "Bearer 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" // Replace this with your actual sk-user key
       },
       body: JSON.stringify({
         model: "openai/gpt-3.5-turbo",
