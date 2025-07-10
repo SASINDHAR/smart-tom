@@ -1,17 +1,34 @@
 const startBtn = document.getElementById("start-btn");
-const output = document.getElementById("output");
-const cat = document.getElementById("cat");
+const voiceBtn = document.getElementById("voice-btn");
+const clearBtn = document.getElementById("clear-btn");
 const mouth = document.getElementById("mouth");
+const chatBox = document.getElementById("chat-box");
+const typingIndicator = document.getElementById("typing-indicator");
 
-// 🎙️ Setup speech recognition
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = 'en-US';
 
+let messages = [
+  { role: "system", content: "You are a friendly AI cat assistant." }
+];
+
+let voiceMode = "friendly"; // or "funny"
+
 startBtn.onclick = () => recognition.start();
+
+voiceBtn.onclick = () => {
+  voiceMode = voiceMode === "friendly" ? "funny" : "friendly";
+  voiceBtn.innerText = `🔊 Voice: ${voiceMode.charAt(0).toUpperCase() + voiceMode.slice(1)}`;
+};
+
+clearBtn.onclick = () => {
+  messages = [{ role: "system", content: "You are a friendly AI cat assistant." }];
+  chatBox.innerHTML = "";
+  typingIndicator.innerText = "";
+};
 
 recognition.onstart = () => {
   startBtn.innerText = "🛑 Listening...";
-  output.innerText = "Listening...";
   mouth.style.opacity = 1;
 };
 
@@ -22,29 +39,40 @@ recognition.onend = () => {
 
 recognition.onresult = async (event) => {
   const userInput = event.results[0][0].transcript;
-  output.innerText = "You: " + userInput;
+  addMessage(userInput, "user");
+  messages.push({ role: "user", content: userInput });
 
-  const reply = await askChatGPT(userInput);
-  output.innerText = "Bot: " + reply;
+  typingIndicator.innerText = "Bot is typing...";
 
+  const reply = await askChatGPT(messages);
+  messages.push({ role: "assistant", content: reply });
+
+  addMessage(reply, "bot");
   speak(reply);
+  typingIndicator.innerText = "";
 };
 
-// 🔊 Speak the bot reply
+function addMessage(text, who) {
+  const bubble = document.createElement("div");
+  bubble.classList.add("message", who);
+  bubble.innerText = (who === "user" ? "You: " : "Bot: ") + text;
+  chatBox.appendChild(bubble);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.pitch = 1.6;
-  utterance.rate = 1.1;
-  speechSynthesis.speak(utterance);
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.pitch = voiceMode === "funny" ? 2 : 1.2;
+  utter.rate = voiceMode === "funny" ? 1.4 : 1;
+  speechSynthesis.speak(utter);
   mouth.style.opacity = 1;
 
-  utterance.onend = () => {
+  utter.onend = () => {
     mouth.style.opacity = 0;
   };
 }
 
-// 🤖 Ask ChatGPT using OpenRouter (safe)
-async function askChatGPT(prompt) {
+async function askChatGPT(messages) {
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -53,10 +81,7 @@ async function askChatGPT(prompt) {
     },
     body: JSON.stringify({
       model: "openai/gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are a friendly AI cat assistant." },
-        { role: "user", content: prompt }
-      ]
+      messages
     })
   });
 
